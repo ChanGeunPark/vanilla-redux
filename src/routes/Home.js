@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { connect } from "react-redux";
+import ToDo from "../components/ToDo";
+import { actionCreators, addTodo } from "./store";
 
-const Home = (props) => {
-  console.log(props);
+const Home = ({ toDos, addToDo }) => {
   const [text, setText] = useState("");
   function onChange(e) {
     setText(e.target.value);
@@ -10,7 +11,8 @@ const Home = (props) => {
 
   function onSubmit(e) {
     e.preventDefault();
-    console.log(text);
+    addToDo(text);
+    setText("");
   }
 
   return (
@@ -20,13 +22,23 @@ const Home = (props) => {
         <input type="text" value={text} onChange={onChange} />
         <button>추가</button>
       </form>
-      <ul></ul>
+      <ul>
+        {toDos.map((toDo, index) => (
+          <ToDo key={toDo.id} {...toDo} />
+        ))}
+      </ul>
     </>
   );
 };
 
-function getCurrentState(state, ownProps) {
+function mapStateToProps(state) {
   return { toDos: state };
 } //이 프롭들을 Home에 넘겨준다.
 
-export default connect(getCurrentState)(Home);
+function mapDispatchProps(dispatch) {
+  return {
+    addToDo: (text) => dispatch(actionCreators.addTodo(text)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchProps)(Home);
